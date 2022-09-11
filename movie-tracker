@@ -1,0 +1,59 @@
+#!/bin/sh
+
+dir="$HOME/data/movie-tracker"
+
+if [ ! -d "$dir" ]
+then
+	mkdir -p "$dir"
+	if [ $? -ne 0 ]
+	then
+		echo "Creation of $dir failed. Quitting."
+		exit
+	fi
+fi
+
+printf "What movie did you see? "
+read title
+printf "When did you see it? "
+read date
+printf "Who is the director? "
+read director
+printf "When was the film originally released? " 
+read release
+printf "What is the director's country? " 
+read country
+
+if [ ! -f "$dir"/cinemas ]
+then
+	touch "$dir"/cinemas
+	if [ $? -ne 0 ]
+	then
+		echo "Creation of file 'cinemas' failed. Quitting."
+		exit
+	fi
+fi
+
+echo "In which cinema?"
+list=$(sed -n 's/".*"//;/^\(\t\|\n\| \)*$/d;2,$p' "$dir/movies.csv" | cut -s -d, -f6 | sort -u | sed 's/\(^\|$\)/"/g' | tr "\n" " ")
+
+eval "set -- $list"
+i=1
+for cinema; do
+	printf "\t$i) $cinema\n"
+	i=$(($i+1))
+done
+printf "\t$i) Other\n"
+
+read option
+if [ $option -lt $i ]
+then
+	cinema=$(eval "echo $(echo "$"$option)")
+else
+	printf "Key in the cinema: "
+	read cinema
+fi
+
+printf "Rating? " 
+read rating
+
+echo "$date,$title,$director,$release,$country,$cinema,$rating" >> $HOME/data/movie-tracker/movies.csv

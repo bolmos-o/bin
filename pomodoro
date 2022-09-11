@@ -7,7 +7,7 @@ while [ "$i" -ne 0 ]; do
 	printf "Time remaining: $i"
 	sleep 60
 	printf "\033[2K\r"
-	i=$(expr "$i" - 1)
+	i=$(("$i"-1))
 done
 
 if command -v notify-send > /dev/null
