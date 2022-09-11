@@ -23,33 +23,34 @@ read release
 printf "What is the director's country? " 
 read country
 
-if [ ! -f "$dir"/cinemas ]
-then
-	touch "$dir"/cinemas
-	if [ $? -ne 0 ]
-	then
-		echo "Creation of file 'cinemas' failed. Quitting."
-		exit
-	fi
-fi
+echo "Where did you see the movie?"
 
-echo "In which cinema?"
+test ! -f "$dir/movies.csv" ||
 list=$(sed -n 's/".*"//;/^\(\t\|\n\| \)*$/d;2,$p' "$dir/movies.csv" | cut -s -d, -f6 | sort -u | sed 's/\(^\|$\)/"/g' | tr "\n" " ")
 
 eval "set -- $list"
 i=1
 for cinema; do
-	printf "\t$i) $cinema\n"
+	printf "\t%2d) $cinema\n" $i
 	i=$(($i+1))
 done
 printf "\t$i) Other\n"
 
 read option
+
+# To add a range limit.
+
+while ! expr $option : '^[1-9][0-9]*$' > /dev/null
+do
+	printf "Choose a valid number (1-$i): "
+	read option
+done
+
 if [ $option -lt $i ]
 then
 	cinema=$(eval "echo $(echo "$"$option)")
 else
-	printf "Key in the cinema: "
+	printf "Where? "
 	read cinema
 fi
 
