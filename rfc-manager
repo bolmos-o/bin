@@ -1,0 +1,42 @@
+#!/bin/sh
+
+dir="$HOME/data/rfcs"
+
+if [ ! -d "$dir" ]
+then
+	mkdir -p $dir
+	if [ $? -ne 0 ]
+	then
+		echo "Directory $dir could not be created."
+	else	
+		echo "$dir created."
+	fi
+fi
+
+echo "Available RFCs:"
+ls $dir
+
+printf "Which RFC do you want to read? "
+read rfc
+
+rfc="rfc$rfc.txt"
+path=$dir/$rfc
+URL="https://www.rfc-editor.org/rfc/$rfc"
+
+if [ ! -f $path ]
+then
+	if `command -v wget > /dev/null`
+	then
+		wget -qP $dir $URL
+		if [ $? -ne 0 ]
+		then
+			echo "Invalid RFC number. Quitting"
+			exit
+		fi	
+	else
+		echo "wget is needed to download new RFCs. Quitting."
+		exit
+	fi
+fi	
+
+more $path
