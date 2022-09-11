@@ -7,7 +7,8 @@ then
 	mkdir -p $dir
 	if [ $? -ne 0 ]
 	then
-		echo "Directory $dir could not be created."
+		echo "Directory $dir could not be created. Quitting."
+		exit
 	else	
 		echo "$dir created."
 	fi
@@ -20,7 +21,6 @@ printf "Which RFC do you want to read? "
 read rfc
 
 rfc="rfc$rfc.txt"
-path=$dir/$rfc
 URL="https://www.rfc-editor.org/rfc/$rfc"
 
 if [ ! -f $path ]
@@ -39,4 +39,4 @@ then
 	fi
 fi	
 
-more $path
+more $dir/$rfc
