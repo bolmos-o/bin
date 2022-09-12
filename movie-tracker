@@ -26,9 +26,12 @@ read country
 echo "Where did you see the movie?"
 
 test ! -f "$dir/movies.csv" ||
-list=$(sed -n 's/".*"//;/^\(\t\|\n\| \)*$/d;2,$p' "$dir/movies.csv" | cut -s -d, -f6 | sort -u | sed 's/\(^\|$\)/"/g' | tr "\n" " ")
+list=$(sed -n 's/".*"//;2,$p' "$dir/movies.csv" | cut -s -d, -f6 | sort -u)
 
-eval "set -- $list"
+IFS='
+'
+
+set -- $list
 i=1
 for cinema; do
 	printf "\t%2d) $cinema\n" $i
@@ -40,7 +43,7 @@ read option
 
 # To add a range limit.
 
-while ! expr $option : '^[1-9][0-9]*$' > /dev/null
+while ! expr "$option" : '^[1-9][0-9]*$' > /dev/null
 do
 	printf "Choose a valid number (1-$i): "
 	read option
